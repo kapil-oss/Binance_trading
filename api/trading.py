@@ -3,7 +3,9 @@ from fastapi import APIRouter, Request
 from binance.client import Client
 from binance.exceptions import BinanceAPIException
 from config import BINANCE_API_KEY, BINANCE_API_SECRET, BINANCE_USE_TESTNET
-from database import store_signal
+from database import store_signal, store_execution
+
+router = APIRouter()
 
 class BinanceTrader:
     def __init__(self):
@@ -31,7 +33,8 @@ class BinanceTrader:
                 symbol=symbol,
                 side=side,
                 type="MARKET",
-                quantity=quantity
+                quantity=quantity,
+                # recvWindow=60000 // for time sychronization issue
             )
 
             return {"success": True, "order": order}
@@ -44,8 +47,6 @@ class BinanceTrader:
 # Global trader instance
 trader = BinanceTrader()
 
-router = APIRouter()
-
 @router.post("/webhook")
 async def receive_signal(request: Request):
     """Receive TradingView webhook signals"""
@@ -55,6 +56,24 @@ async def receive_signal(request: Request):
         # Execute trade FIRST for speed
         if data and trader.client:
             execution_result = await trader.execute_trade(data)
+
+            # Store execution result
+            if execution_result.get("success"):
+                store_execution(
+                    data.get("action", ""),
+                    data.get("symbol", ""),
+                    data.get("quantity", ""),
+                    "success",
+                    execution_result.get("order", {}).get("orderId")
+                )
+            else:
+                store_execution(
+                    data.get("action", ""),
+                    data.get("symbol", ""),
+                    data.get("quantity", ""),
+                    "failed",
+                    execution_result.get("error")
+                )
 
             # Store signal AFTER execution
             store_signal(

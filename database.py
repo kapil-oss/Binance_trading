@@ -22,6 +22,18 @@ class Signal(Base):
     price = Column(Float)
     signal_time = Column(DateTime)
 
+class Execution(Base):
+    __tablename__ = "executions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime, default=datetime.now)
+    action = Column(String)
+    symbol = Column(String)
+    quantity = Column(Float)
+    status = Column(String)
+    order_id = Column(String)
+    execution_time = Column(DateTime)
+
 def init_database():
     """Initialize database tables"""
     Base.metadata.create_all(bind=engine)
@@ -50,6 +62,30 @@ def store_signal(action, symbol, quantity, price, signal_time):
             signal_time=ist_signal_time
         )
         db.add(db_signal)
+        db.commit()
+        return True
+    except Exception as e:
+        print(f"Database error: {e}")
+        db.rollback()
+        return False
+    finally:
+        db.close()
+
+def store_execution(action, symbol, quantity, status, order_id=None):
+    """Store execution result in database"""
+    execution_time = datetime.now()
+
+    db = SessionLocal()
+    try:
+        db_execution = Execution(
+            action=action,
+            symbol=symbol,
+            quantity=quantity,
+            status=status,
+            order_id=order_id or "N/A",
+            execution_time=execution_time
+        )
+        db.add(db_execution)
         db.commit()
         return True
     except Exception as e:
