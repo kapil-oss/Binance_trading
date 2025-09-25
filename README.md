@@ -1,179 +1,244 @@
-# AlsaTrade Mobile App
+# Alsa Trade Backend
 
-A React Native mobile app for trading dashboard management, built with Expo for easy development and deployment.
+A comprehensive trading automation platform that integrates TradingView webhooks with Binance futures trading, featuring a modern web interface for strategy management and real-time execution monitoring.
 
-## Features
+## Overview
 
-- **Dashboard**: Real-time trading metrics and strategy overview
-- **Executions**: View trade execution history and status
-- **Settings**: Configure trading preferences and account settings
-- **Dark Theme**: Modern dark UI optimized for mobile
-- **Real-time Updates**: Live data synchronization with backend
+This project provides a complete trading automation solution that:
+- Receives trading signals from TradingView webhooks
+- Executes trades automatically on Binance Futures
+- Provides comprehensive position and risk management
+- Offers detailed execution tracking and performance analytics
+- Features a responsive web interface for configuration and monitoring
 
-## Prerequisites
-
-- Node.js (v16 or higher)
-- npm or yarn
-- Expo CLI (`npm install -g @expo/cli`)
-- Expo Go app on your mobile device
-- AlsaTrade Backend running (Python FastAPI)
-
-## Setup Instructions
-
-### 1. Install Dependencies
-
-```bash
-npm install
-```
-
-### 2. Configure Backend URL
-
-Edit `src/services/api.js` and update the `API_BASE_URL`:
-
-```javascript
-const API_BASE_URL = 'http://YOUR_BACKEND_IP:8000'; // Replace with your backend URL
-```
-
-**Important**: If running on mobile device, use your computer's IP address, not `localhost`.
-
-### 3. Start the Development Server
-
-```bash
-npm start
-```
-
-This will start the Expo development server and show a QR code.
-
-### 4. Run on Mobile Device
-
-1. Install **Expo Go** app from App Store (iOS) or Google Play (Android)
-2. Scan the QR code with your device camera (iOS) or Expo Go app (Android)
-3. The app will load and connect to your backend
-
-## Project Structure
+## Architecture
 
 ```
-├── App.js                 # Main app entry point
-├── app.json              # Expo configuration
-├── src/
-│   ├── components/       # Reusable UI components
-│   │   ├── MetricCard.js
-│   │   ├── ConnectionStatus.js
-│   │   └── SettingsCard.js
-│   ├── context/          # React context for state management
-│   │   └── TradingContext.js
-│   ├── screens/          # App screens
-│   │   ├── DashboardScreen.js
-│   │   ├── ExecutionsScreen.js
-│   │   └── SettingsScreen.js
-│   ├── services/         # API and utility services
-│   │   └── api.js
-│   └── theme/            # App theme and styling
-│       └── theme.js
-└── assets/               # App icons and images
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   TradingView   │────│  Alsa Trade App  │────│  Binance API    │
+│   Webhooks      │    │                  │    │  (Futures)      │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+                              │
+                       ┌──────────────┐
+                       │ PostgreSQL   │
+                       │ Database     │
+                       └──────────────┘
 ```
-
-## Available Scripts
-
-- `npm start` - Start Expo development server
-- `npm run android` - Start with Android device/emulator
-- `npm run ios` - Start with iOS simulator
-- `npm run web` - Start web version
-
-## Backend Integration
-
-The app connects to the AlsaTrade Python backend API. Ensure your backend is running and accessible:
-
-1. Start your Python FastAPI backend
-2. Update the API URL in `src/services/api.js`
-3. Ensure your mobile device can reach the backend (same network)
-
-### API Endpoints Used
-
-- `GET /preferences/options` - Get available trading options
-- `GET /preferences/current` - Get current user preferences
-- `POST /preferences/*` - Update trading preferences
-- `GET /account/summary` - Get account balance information
-- `GET /executions` - Get trade execution history
-
-## Customization
-
-### Theme Colors
-
-Edit `src/theme/theme.js` to customize the app's color scheme:
-
-```javascript
-export const colors = {
-  background: '#030712',
-  accent: '#38bdf8',
-  // ... other colors
-};
-```
-
-### Navigation
-
-Modify `App.js` to add new screens or change navigation structure.
 
 ### Components
 
-Add new components in `src/components/` and import them in your screens.
+- **Backend API** (FastAPI): Handles webhooks, trading logic, and data management
+- **Frontend Web UI** (Vanilla JavaScript): Configuration interface and monitoring dashboard
+- **Database** (PostgreSQL): Stores signals, executions, preferences, and analytics
+- **Trading Engine**: Advanced position management with leverage and capital allocation
 
-## Troubleshooting
+## Features
 
-### Common Issues
+### Trading Automation
+- **Signal Processing**: Receives and validates TradingView webhook signals
+- **Strategy Filtering**: Configurable strategy matching and validation
+- **Direction Controls**: Long-only, short-only, or bidirectional trading modes
+- **Dynamic Leverage**: Per-trade leverage configuration with Binance integration
+- **Capital Allocation**: Percentage-based position sizing with balance integration
 
-1. **Can't connect to backend**
-   - Ensure backend is running
-   - Check if mobile device is on same network
-   - Use IP address instead of localhost
-   - Check firewall settings
+### Risk Management
+- **Position Validation**: Symbol-specific quantity precision handling
+- **Balance Checks**: Real-time account balance integration for position sizing
+- **Error Handling**: Comprehensive error tracking and recovery
+- **Execution Monitoring**: Detailed timing analysis for trade execution latency
 
-2. **App won't load**
-   - Clear Expo cache: `expo start -c`
-   - Restart Expo development server
-   - Check for JavaScript errors in console
+### Analytics & Monitoring
+- **Real-time Dashboard**: Live execution monitoring with status indicators
+- **Performance Tracking**: P&L analysis, win rates, and trading metrics
+- **Detailed Logging**: Comprehensive audit trail for all trading activities
+- **Account Snapshots**: Balance tracking and position monitoring
 
-3. **Missing dependencies**
-   - Run `npm install` again
-   - Clear node_modules: `rm -rf node_modules && npm install`
+## Installation
 
-### Network Configuration
+### Prerequisites
+- Python 3.8+
+- PostgreSQL database
+- Binance account with API access
+- TradingView account (for webhook setup)
 
-For local development, your mobile device needs to reach your backend server:
+### Setup
 
-1. Find your computer's IP address:
-   - Windows: `ipconfig`
-   - Mac/Linux: `ifconfig`
-
-2. Update API_BASE_URL to use this IP:
-   ```javascript
-   const API_BASE_URL = 'http://192.168.1.100:8000'; // Example IP
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd AlsaTradeBackend-python
    ```
 
-3. Ensure your backend accepts connections from your IP
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## Building for Production
+3. **Configure environment variables**
+   Create a `.env` file with:
+   ```env
+   DATABASE_URL=postgresql://username:password@localhost/alsatrade
+   BINANCE_API_KEY=your_binance_api_key
+   BINANCE_API_SECRET=your_binance_api_secret
+   BINANCE_USE_TESTNET=1
+   ```
 
-### Android
+4. **Initialize database**
+   ```bash
+   python migrate_database.py
+   ```
 
-```bash
-expo build:android
+5. **Start the application**
+   ```bash
+   python main.py
+   ```
+
+The application will be available at:
+- **API**: http://localhost:8000
+- **Web Interface**: http://localhost:8000/ui
+
+## Configuration
+
+### Strategy Preferences
+
+Access the web interface to configure:
+
+1. **Product Selection**: Choose target trading instruments (BTC, ETH, etc.)
+2. **Strategy Selection**: Configure strategy matching for webhook filtering
+3. **Direction Control**: Set allowed trading directions
+4. **Leverage Settings**: Configure leverage multipliers
+5. **Capital Allocation**: Set percentage of account balance to use
+
+### TradingView Webhook Setup
+
+Configure TradingView alerts to send webhooks to:
+```
+POST http://your-domain:8000/webhook
 ```
 
-### iOS
-
-```bash
-expo build:ios
+Required webhook payload format:
+```json
+{
+  "action": "buy",
+  "symbol": "BTCUSDT",
+  "quantity": 0.001,
+  "price": 45000,
+  "strategy": "ALSAPRO 1",
+  "time": "2024-01-01T12:00:00Z"
+}
 ```
 
-## Contributing
+## API Documentation
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test on both iOS and Android
-5. Submit a pull request
+### Core Endpoints
+
+- `POST /webhook` - Receive TradingView signals
+- `GET /executions` - Retrieve execution history
+- `GET /account/summary` - Get account balance information
+- `GET /preferences/current` - Get current strategy preferences
+- `POST /preferences/{type}` - Update strategy preferences
+
+### Database Schema
+
+Key models include:
+- **StrategyPreference**: User trading preferences
+- **Signal**: Incoming webhook data
+- **Execution**: Trade execution records with timing
+- **AccountSnapshot**: Balance history
+- **Position**: Active position tracking
+- **Order**: Binance order details
+
+## Web Interface
+
+The responsive web interface provides:
+
+### Dashboard
+- Real-time account balance display
+- Active position monitoring
+- Recent execution history
+- Strategy allocation visualization
+
+### Configuration Panel
+- Product and strategy selection
+- Direction mode controls
+- Leverage configuration
+- Capital allocation settings
+
+### Monitoring Tools
+- Detailed execution logs with timing analysis
+- Performance metrics and analytics
+- Error tracking and diagnostics
+- Account activity history
+
+## Development
+
+### File Structure
+```
+├── api/
+│   ├── preferences.py     # Strategy preference management
+│   └── trading.py         # Core trading logic and execution
+├── frontend/
+│   └── app.js            # Web interface JavaScript
+├── config.py             # Application configuration
+├── database.py           # Database models and utilities
+├── main.py              # FastAPI application entry point
+└── requirements.txt     # Python dependencies
+```
+
+### Key Classes
+
+- **BinanceTrader**: Handles all Binance API interactions
+- **StrategyPreference**: Database model for user preferences
+- **Signal/Execution**: Models for tracking trade lifecycle
+- **Database utilities**: Session management and data operations
+
+### Testing
+
+Run the application in testnet mode by setting:
+```env
+BINANCE_USE_TESTNET=1
+```
+
+This uses Binance testnet for safe development and testing.
+
+## Security Considerations
+
+- API keys are stored in environment variables
+- Database connections use connection pooling
+- Input validation on all webhook endpoints
+- Error handling prevents information disclosure
+- Audit logging for all trading activities
+
+## Performance
+
+- Async/await patterns for concurrent operations
+- Database indexing on frequently queried fields
+- Efficient batch operations for large datasets
+- Caching for frequently accessed configuration data
+- Connection pooling for database and API connections
+
+## Monitoring & Maintenance
+
+### Logs
+- Application logs track all significant events
+- Database logs capture all trading activities
+- Error logs provide detailed stack traces
+- Performance logs monitor execution timing
+
+### Health Checks
+- Database connectivity monitoring
+- Binance API status verification
+- Webhook endpoint availability testing
+- Balance and position consistency checks
+
+## Support & Documentation
+
+For issues or questions:
+1. Check the execution logs in the web interface
+2. Review database records for detailed transaction history
+3. Verify Binance API connectivity and permissions
+4. Ensure TradingView webhook configuration is correct
 
 ## License
 
-This project is licensed under the MIT License.
+This project is proprietary software. All rights reserved.
