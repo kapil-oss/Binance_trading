@@ -600,15 +600,18 @@ async def _process_execution(data, preference, clean_price, timing_data):
     )
 
     if execution_result.get("success"):
+        order_id = execution_result.get("order", {}).get("orderId")
+        print(f"💾 STORING SUCCESS: action={data.get('action')}, symbol={data.get('symbol')}, order_id={order_id}")
         store_execution(
             data.get("action", ""),
             data.get("symbol", ""),
             quantity_for_storage,
             "success",
-            execution_result.get("order", {}).get("orderId"),
+            order_id,
             timing_data
         )
     else:
+        print(f"💾 STORING FAILURE: action={data.get('action')}, symbol={data.get('symbol')}, error={execution_result.get('error')}")
         store_execution(
             data.get("action", ""),
             data.get("symbol", ""),
@@ -694,6 +697,9 @@ def list_executions(limit: int = 20, db: Session = Depends(get_db)) -> List[Exec
         .limit(limit)
         .all()
     )
+    print(f"📊 EXECUTIONS ENDPOINT: Returning {len(executions)} executions")
+    for i, exec in enumerate(executions[:3]):  # Show first 3 for debug
+        print(f"📊 EXECUTION #{i+1}: status={exec.status}, action={exec.action}, symbol={exec.symbol}, order_id={exec.order_id}")
     return executions
 
 
