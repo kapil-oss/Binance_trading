@@ -18,8 +18,12 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from config import DATABASE_URL
 
-# Database setup
-engine = create_engine(DATABASE_URL)
+# Database setup - Convert postgresql:// to postgresql+pg8000:// for pg8000 driver
+database_url = DATABASE_URL
+if database_url and database_url.startswith('postgresql://'):
+    database_url = database_url.replace('postgresql://', 'postgresql+pg8000://', 1)
+
+engine = create_engine(database_url)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
