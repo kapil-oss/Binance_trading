@@ -13,6 +13,15 @@ app = FastAPI(title=APP_TITLE)
 # Initialize database
 init_database()
 
+# Run migration on startup
+try:
+    from quick_migration import run_migration
+    print("🚀 Running database migration on startup...")
+    run_migration()
+except Exception as e:
+    print(f"⚠️ Migration failed on startup: {e}")
+    print("🔄 Continuing with app startup...")
+
 # Include routers
 app.include_router(trading_router)
 app.include_router(preferences_router)
