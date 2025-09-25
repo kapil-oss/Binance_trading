@@ -14,7 +14,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import JSONB, INET
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, sessionmaker, relationship
 
 from config import DATABASE_URL
 
@@ -35,6 +35,7 @@ class StrategyPreference(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_ref = Column(String, unique=True, nullable=False, default=DEFAULT_USER_REF)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=True)  # Link to user table
     product = Column(String, nullable=True)
     strategy = Column(String, nullable=True)
     direction_mode = Column(String, nullable=True)
@@ -42,6 +43,9 @@ class StrategyPreference(Base):
     capital_allocation_percent = Column(Float, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship (will work when User model is imported)
+    # user = relationship("User", back_populates="preferences")
 
 
 class Signal(Base):
