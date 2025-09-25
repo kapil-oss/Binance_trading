@@ -19,11 +19,34 @@ class SimpleBinanceClient:
         self.api_key = api_key
         self.api_secret = api_secret
         self.testnet = testnet
+        self.server_time_offset = 0
 
         if testnet:
             self.base_url = "https://testnet.binancefuture.com"
         else:
             self.base_url = "https://fapi.binance.com"
+
+        # Initialize server time offset
+        try:
+            self._sync_time_offset()
+        except Exception as e:
+            print(f"⚠️ Failed to sync time with server: {e}")
+            print("📌 Continuing with local time...")
+
+    def _sync_time_offset(self):
+        """Sync time offset with Binance server."""
+        try:
+            response = requests.get(f"{self.base_url}/fapi/v1/time")
+            response.raise_for_status()
+            server_time = response.json()['serverTime']
+            local_time = int(time.time() * 1000)
+            self.server_time_offset = server_time - local_time
+        except Exception:
+            self.server_time_offset = 0
+
+    def _get_timestamp(self) -> int:
+        """Get synchronized timestamp."""
+        return int(time.time() * 1000) + self.server_time_offset
 
     def _generate_signature(self, params: Dict[str, Any]) -> str:
         """Generate HMAC SHA256 signature."""
@@ -46,7 +69,8 @@ class SimpleBinanceClient:
         }
 
         if signed:
-            params['timestamp'] = int(time.time() * 1000)
+            params['timestamp'] = self._get_timestamp()
+            params['recvWindow'] = 10000  # 10 seconds window
             params['signature'] = self._generate_signature(params)
 
         try:
@@ -80,6 +104,10 @@ class SimpleBinanceClient:
     def futures_exchange_info(self) -> Dict[str, Any]:
         """Get exchange info."""
         return self._make_request('GET', '/fapi/v1/exchangeInfo')
+
+    def server_time(self) -> Dict[str, Any]:
+        """Get server time."""
+        return self._make_request('GET', '/fapi/v1/time')
 
     def futures_change_leverage(self, symbol: str, leverage: int) -> Dict[str, Any]:
         """Change leverage for symbol."""

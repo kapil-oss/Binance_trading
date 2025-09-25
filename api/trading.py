@@ -42,6 +42,21 @@ class ExecutionRecord(BaseModel):
     sent_to_binance_time: Optional[datetime] = None
     binance_executed_time: Optional[datetime] = None
 
+    # Additional execution details from database schema
+    executed_price: Optional[float] = None
+    executed_quantity: Optional[float] = None
+    fees: Optional[float] = None
+    commission_asset: Optional[str] = None
+    leverage: Optional[int] = None
+    capital_percent: Optional[float] = None
+
+    # Error tracking
+    error_message: Optional[str] = None
+    error_code: Optional[str] = None
+
+    # Database timestamps
+    created_at: Optional[datetime] = None
+
     # Computed property for frontend timing display
     @property
     def timing(self) -> Optional[dict]:
