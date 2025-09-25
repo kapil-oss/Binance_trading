@@ -619,8 +619,13 @@ async def _process_execution(data, preference, clean_price, timing_data):
         else data.get("quantity", "")
     )
 
-    # Get processed symbol from validation (removes .P suffix)
-    processed_symbol = validation_result.get("processed_symbol", data.get("symbol", ""))
+    # Get processed symbol (removes .P suffix)
+    raw_symbol = data.get("symbol", "")
+    processed_symbol = raw_symbol if raw_symbol else ""
+    if processed_symbol.startswith("BINANCE:"):
+        processed_symbol = processed_symbol.replace("BINANCE:", "")
+    if processed_symbol.endswith(".P"):
+        processed_symbol = processed_symbol[:-2]
 
     if execution_result.get("success"):
         order_id = execution_result.get("order", {}).get("orderId")
@@ -659,6 +664,14 @@ def _process_ignored_signal(data, ignore_message, timing_data):
             clean_quantity if clean_quantity is not None
             else data.get("quantity", "")
         )
+
+        # Get processed symbol (removes .P suffix)
+        raw_symbol = data.get("symbol", "")
+        processed_symbol = raw_symbol if raw_symbol else ""
+        if processed_symbol.startswith("BINANCE:"):
+            processed_symbol = processed_symbol.replace("BINANCE:", "")
+        if processed_symbol.endswith(".P"):
+            processed_symbol = processed_symbol[:-2]
 
         store_execution(
             data.get("action", ""),
