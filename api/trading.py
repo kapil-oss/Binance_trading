@@ -215,7 +215,11 @@ class BinanceTrader:
             )
             if "error" in quantity_calc_result:
                 return quantity_calc_result
-            applied_quantity = quantity_calc_result["quantity"]
+            calculated_quantity = quantity_calc_result["quantity"]
+
+            # Use whichever is larger: webhook quantity or calculated quantity
+            applied_quantity = max(base_quantity, calculated_quantity)
+            print(f"💰 QUANTITY CHOICE: base={base_quantity}, calculated={calculated_quantity}, using={applied_quantity}")
 
         # Apply precision and validate
         precision_result = self._apply_quantity_precision(applied_quantity, symbol)
