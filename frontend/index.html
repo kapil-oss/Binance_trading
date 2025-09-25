@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlsaTrade - Trading Dashboard</title>
+  <link rel="stylesheet" href="styles.css?v=2" />
+</head>
+<body>
+  <main class="layout two-row-layout">
+    <div class="hero-metrics-bar" aria-live="polite">
+      <article class="metric"><span class="metric-label">Product</span><span class="metric-value" id="hero-product">--</span></article>
+      <article class="metric"><span class="metric-label">Strategy</span><span class="metric-value" id="hero-strategy">--</span></article>
+      <article class="metric"><span class="metric-label">Long</span><span class="metric-value" id="hero-long">Off</span></article>
+      <article class="metric"><span class="metric-label">Short</span><span class="metric-value" id="hero-short">Off</span></article>
+      <article class="metric"><span class="metric-label">Total</span><span class="metric-value" id="hero-total-allocation">0%</span></article>
+      <article class="metric"><span class="metric-label">Wallet</span><span class="metric-value metric-value--accent" id="hero-wallet">--</span></article>
+      <article class="metric"><span class="metric-label">Available</span><span class="metric-value" id="hero-available">--</span></article>
+    </div>
+
+    <!-- Master Allocation Section -->
+    <section class="panel master-allocation-panel">
+      <div class="panel-header">
+        <h2>Master Capital Allocation</h2>
+        <div class="master-total">
+          <strong>Total Allocated: <span id="master-total-allocation">0%</span></strong>
+          <span class="master-allocation-warning" id="master-allocation-warning" style="display: none;">⚠️ Exceeds 100%</span>
+        </div>
+      </div>
+      <div class="master-allocation-grid" id="master-allocation-grid">
+        <div class="master-strategy-item" id="primary-strategy-allocation">
+          <div class="master-strategy-header">
+            <h4>Primary Strategy</h4>
+            <span class="master-strategy-name" id="primary-strategy-name">--</span>
+          </div>
+          <div class="master-allocation-controls">
+            <div class="allocation-input-enhanced">
+              <input type="range" id="primary-allocation-slider" min="0" max="100" value="0" class="allocation-slider-enhanced" />
+              <input type="number" id="primary-allocation-input" min="0" max="100" value="0" class="allocation-input-number" />
+              <span class="allocation-percent">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="two-row-grid stacked-logs-grid">
+      <section class="panel settings-panel two-row-panel stacked-settings-panel">
+        <div class="panel-header"><h2>Strategy Inputs</h2></div>
+        <div class="settings-grid two-row-settings-grid">
+          <div class="settings-card settings-card--wide"><h3>Market</h3><p class="support-text">Select the trading product to align signals with the correct market.</p><label class="field field--stack"><span class="field-label">Product</span><select id="product-select"></select></label></div>
+          <div class="settings-card settings-card--wide"><h3>SaaS Package</h3><p class="support-text">Choose the automation pack delivering entries and exits.</p><label class="field field--stack"><span class="field-label">Strategy</span><select id="strategy-select"></select></label></div>
+          <div class="settings-card settings-card--wide"><h3>Trading Configuration</h3><p class="support-text">Configure Long and Short positions with individual leverage and capital allocation.</p><div class="trading-config"><div class="position-config" id="long-config"><div class="position-header"><button type="button" class="position-toggle" id="long-toggle" data-position="long"><span class="toggle-indicator"></span>Long Positions</button></div><div class="position-controls"><div class="control-group"><label class="control-label">Leverage</label><select id="long-leverage-select" class="control-select"></select></div><div class="control-group"><label class="control-label">Capital Allocation</label><div class="allocation-input"><input type="range" id="long-capital-range" min="0" max="100" value="0" class="allocation-slider" /><span id="long-capital-value" class="allocation-value">0%</span></div></div></div></div><div class="position-config" id="short-config"><div class="position-header"><button type="button" class="position-toggle" id="short-toggle" data-position="short"><span class="toggle-indicator"></span>Short Positions</button></div><div class="position-controls"><div class="control-group"><label class="control-label">Leverage</label><select id="short-leverage-select" class="control-select"></select></div><div class="control-group"><label class="control-label">Capital Allocation</label><div class="allocation-input"><input type="range" id="short-capital-range" min="0" max="100" value="0" class="allocation-slider" /><span id="short-capital-value" class="allocation-value">0%</span></div></div></div></div></div><div class="allocation-summary"><div class="total-allocation"><strong>Total Allocation: <span id="total-allocation">0%</span></strong><span class="allocation-warning" id="allocation-warning" style="display: none;">⚠️ Exceeds 100%</span></div></div><div class="tips"><strong>Tip:</strong> Enable both Long and Short for dynamic hedging as signals change direction.</div></div>
+          <div class="settings-card settings-card--wide" id="strategy-management"><h3>Additional Strategies</h3><p class="support-text">Add and configure multiple trading strategies. Each strategy gets its own capital allocation from the master pool.</p><div class="strategy-controls"><div class="strategy-header"><h4>Additional Strategies</h4><button type="button" class="add-strategy-btn" id="add-strategy-btn">+ Add Strategy</button></div><div class="strategies-list" id="strategies-list"></div></div></div>
+        </div>
+      </section>
+
+      <div class="stacked-right-col">
+        <aside class="panel insight-panel two-row-panel stacked-snapshot-panel" aria-live="polite">
+          <div class="insight-section"><div class="insight-section__header"><h2>Program Snapshot</h2></div><div class="summary-grid two-row-summary-grid">
+            <article class="summary-item"><span class="summary-label">Product</span><span class="summary-value" id="summary-product">--</span></article>
+            <article class="summary-item"><span class="summary-label">Strategy</span><span class="summary-value" id="summary-strategy">--</span></article>
+            <article class="summary-item"><span class="summary-label">Long Active</span><span class="summary-value" id="summary-long-active">No</span></article>
+            <article class="summary-item"><span class="summary-label">Short Active</span><span class="summary-value" id="summary-short-active">No</span></article>
+            <article class="summary-item"><span class="summary-label">Long Allocation</span><span class="summary-value" id="summary-long-allocation">0%</span></article>
+            <article class="summary-item"><span class="summary-label">Short Allocation</span><span class="summary-value" id="summary-short-allocation">0%</span></article>
+            <article class="summary-item"><span class="summary-label">Total Allocation</span><span class="summary-value" id="summary-total-allocation">0%</span></article>
+            <article class="summary-item"><span class="summary-label">Wallet Balance</span><span class="summary-value" id="summary-account-balance">--</span></article>
+            <article class="summary-item"><span class="summary-label">Available Balance</span><span class="summary-value" id="summary-account-available">--</span></article>
+          </div></div>
+          <div class="callout"><h3>Before going live</h3><ul><li>Verify capital availability with your broker.</li><li>Confirm SaaS permissions for this account.</li><li>Review your max drawdown and risk rules.</li></ul></div>
+        </aside>
+        <div class="logs-card logs-card--wide two-row-logs-card stacked-logs-card">
+          <div class="logs-card__header"><h2>Recent Activity</h2></div>
+          <ul id="activity-log" class="activity-log"><li class="activity-placeholder">Actions will appear here once you start updating preferences.</li></ul>
+          <p class="support-text">All API submissions are logged locally for quick traceability.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Full-width Trade Executions Section at bottom -->
+  <section class="execution-section-full">
+    <div class="execution-widget-full">
+      <div class="execution-header-full">
+        <h2>Trade Executions</h2>
+        <div class="execution-controls">
+          <button type="button" class="toggle-details-btn" id="toggle-details-btn">Show Details</button>
+          <button type="button" class="toggle-timing-btn" id="toggle-timing-btn">Show Timing</button>
+          <span class="execution-count" id="execution-count">0 executions</span>
+        </div>
+      </div>
+      <div class="execution-log-container-full">
+        <ul id="execution-log" class="execution-log-full"><li class="activity-placeholder">Waiting for webhook activity.</li></ul>
+      </div>
+      <p class="support-text">Comprehensive trade execution tracking with full timing, pricing, and error details - Updated in real-time</p>
+    </div>
+  </section>
+
+
+  <div id="toast" class="toast" role="status" aria-live="assertive" hidden></div>
+  <div id="screen-loader" class="screen-loader" hidden>
+    <div class="spinner" role="status" aria-label="Loading"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
