@@ -2,7 +2,7 @@
 import hashlib
 import hmac
 import time
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import requests
 from urllib.parse import urlencode
 
