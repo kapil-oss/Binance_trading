@@ -4,8 +4,7 @@ from decimal import Decimal
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request
-from binance.client import Client
-from binance.exceptions import BinanceAPIException
+from binance_client import Client, BinanceAPIException
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
