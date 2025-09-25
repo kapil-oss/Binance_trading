@@ -368,6 +368,8 @@ def store_execution(action, symbol, quantity, status, order_id=None, timing_data
     """Store execution result in database with optional timing data and execution details"""
     execution_time = datetime.now()
 
+    print(f"🗄️ STORING EXECUTION: action={action}, symbol={symbol}, status={status}, order_id={order_id}")
+
     db = SessionLocal()
     try:
         db_execution = Execution(
@@ -400,9 +402,10 @@ def store_execution(action, symbol, quantity, status, order_id=None, timing_data
 
         db.add(db_execution)
         db.commit()
+        print(f"✅ EXECUTION SAVED: id={db_execution.id}, status={status}")
         return True
     except Exception as e:
-        print(f"Database error: {e}")
+        print(f"❌ DATABASE ERROR: {e}")
         db.rollback()
         return False
     finally:

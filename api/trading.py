@@ -709,7 +709,8 @@ def list_executions(limit: int = 20, db: Session = Depends(get_db)) -> List[Exec
     )
     print(f"📊 EXECUTIONS ENDPOINT: Returning {len(executions)} executions")
     for i, exec in enumerate(executions[:3]):  # Show first 3 for debug
-        print(f"📊 EXECUTION #{i+1}: status={exec.status}, action={exec.action}, symbol={exec.symbol}, order_id={exec.order_id}")
+        print(f"📊 EXECUTION #{i+1}: id={exec.id}, status={exec.status}, action={exec.action}, symbol={exec.symbol}, order_id={exec.order_id}")
+        print(f"📊 EXECUTION #{i+1} TIMES: timestamp={exec.timestamp}, execution_time={exec.execution_time}")
     return executions
 
 
