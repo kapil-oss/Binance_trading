@@ -160,7 +160,8 @@ class BinanceTrader:
         return {
             "action": action,
             "symbol": symbol,
-            "base_quantity": base_quantity
+            "base_quantity": base_quantity,
+            "processed_symbol": symbol  # Store the processed symbol for consistent storage
         }
 
     def _apply_leverage(self, symbol, preference_data):
@@ -583,13 +584,21 @@ def _validate_signal_permissions(data):
     ]
     ignore_message = "; ".join(ignore_messages) if ignore_messages else None
 
+    # Get processed symbol (removes .P, BINANCE: etc.)
+    processed_symbol = symbol if symbol else ""
+    if processed_symbol.startswith("BINANCE:"):
+        processed_symbol = processed_symbol.replace("BINANCE:", "")
+    if processed_symbol.endswith(".P"):
+        processed_symbol = processed_symbol[:-2]
+
     return {
         "allow_execution": allow_execution,
         "ignore_message": ignore_message,
         "preference": preference,
         "clean_price": clean_price,
         "clean_quantity": clean_quantity,
-        "signal_strategy": signal_strategy
+        "signal_strategy": signal_strategy,
+        "processed_symbol": processed_symbol
     }
 
 
@@ -609,22 +618,25 @@ async def _process_execution(data, preference, clean_price, timing_data):
         else data.get("quantity", "")
     )
 
+    # Get processed symbol from validation (removes .P suffix)
+    processed_symbol = validation_result.get("processed_symbol", data.get("symbol", ""))
+
     if execution_result.get("success"):
         order_id = execution_result.get("order", {}).get("orderId")
-        print(f"💾 STORING SUCCESS: action={data.get('action')}, symbol={data.get('symbol')}, order_id={order_id}")
+        print(f"💾 STORING SUCCESS: action={data.get('action')}, symbol={processed_symbol}, order_id={order_id}")
         store_execution(
             data.get("action", ""),
-            data.get("symbol", ""),
+            processed_symbol,
             quantity_for_storage,
             "success",
             order_id,
             timing_data
         )
     else:
-        print(f"💾 STORING FAILURE: action={data.get('action')}, symbol={data.get('symbol')}, error={execution_result.get('error')}")
+        print(f"💾 STORING FAILURE: action={data.get('action')}, symbol={processed_symbol}, error={execution_result.get('error')}")
         store_execution(
             data.get("action", ""),
-            data.get("symbol", ""),
+            processed_symbol,
             quantity_for_storage,
             "failed",
             execution_result.get("error"),
@@ -649,7 +661,7 @@ def _process_ignored_signal(data, ignore_message, timing_data):
 
         store_execution(
             data.get("action", ""),
-            data.get("symbol", ""),
+            processed_symbol,
             quantity_for_storage,
             "ignored",
             ignore_message,
@@ -657,11 +669,12 @@ def _process_ignored_signal(data, ignore_message, timing_data):
         )
 
 
-def _store_signal_data(data, clean_quantity, clean_price):
+def _store_signal_data(data, clean_quantity, clean_price, processed_symbol=None):
     """Store signal data."""
+    symbol_to_store = processed_symbol or data.get("symbol", "")
     store_signal(
         data.get("action", ""),
-        data.get("symbol", ""),
+        symbol_to_store,
         clean_quantity if clean_quantity is not None else data.get("quantity", ""),
         clean_price,
         data.get("time", ""),
@@ -759,7 +772,7 @@ async def receive_signal(request: Request):
             _process_ignored_signal(data, ignore_message, timing_data)
             execution_result = None
 
-        _store_signal_data(data, validation_result["clean_quantity"], clean_price)
+        _store_signal_data(data, validation_result["clean_quantity"], clean_price, validation_result.get("processed_symbol"))
 
         return _build_response(allow_execution, execution_result, ignore_message, preference,
                               data, timing_data, validation_result.get("signal_strategy"))
