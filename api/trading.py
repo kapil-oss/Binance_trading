@@ -585,7 +585,8 @@ def _validate_signal_permissions(data):
     ignore_message = "; ".join(ignore_messages) if ignore_messages else None
 
     # Get processed symbol (removes .P, BINANCE: etc.)
-    processed_symbol = symbol if symbol else ""
+    raw_symbol = data.get("symbol", "")
+    processed_symbol = raw_symbol if raw_symbol else ""
     if processed_symbol.startswith("BINANCE:"):
         processed_symbol = processed_symbol.replace("BINANCE:", "")
     if processed_symbol.endswith(".P"):
