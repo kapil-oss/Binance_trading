@@ -69,7 +69,7 @@ class Execution(Base):
     symbol = Column(String(50))
     quantity = Column(DECIMAL(20, 8))
     status = Column(String(20))
-    order_id = Column(String(100))
+    order_id = Column(String(500))
     execution_time = Column(DateTime)
 
     # Detailed timing tracking

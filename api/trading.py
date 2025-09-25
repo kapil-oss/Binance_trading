@@ -319,10 +319,16 @@ class BinanceTrader:
         quantity_decimal = Decimal(str(quantity))
         step_size_decimal = Decimal(step_size)
 
+        print(f"🔢 QUANTITY PRECISION: symbol={symbol}, quantity={quantity}, step_size={step_size}")
+        print(f"🔢 DECIMALS: quantity_decimal={quantity_decimal}, step_size_decimal={step_size_decimal}")
+
         # Round down to nearest valid step size multiple
         applied_quantity = (quantity_decimal // step_size_decimal) * step_size_decimal
 
+        print(f"🔢 APPLIED QUANTITY: {applied_quantity}")
+
         if applied_quantity <= 0:
+            print(f"❌ QUANTITY ERROR: Applied quantity {applied_quantity} is zero or negative")
             return {"error": "Calculated quantity is zero"}
 
         # Format as string with appropriate decimal places for Binance API
