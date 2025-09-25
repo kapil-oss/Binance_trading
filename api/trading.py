@@ -73,11 +73,15 @@ class BinanceTrader:
     def __init__(self):
         self.client = None
         if BINANCE_API_KEY and BINANCE_API_SECRET:
+            print(f"🔧 BINANCE CLIENT: Initializing with testnet={BINANCE_USE_TESTNET}")
             self.client = Client(
                 BINANCE_API_KEY,
                 BINANCE_API_SECRET,
                 testnet=BINANCE_USE_TESTNET,
             )
+            print("✅ BINANCE CLIENT: Successfully initialized")
+        else:
+            print("❌ BINANCE CLIENT: Missing API credentials")
 
 
     async def execute_trade(self, signal_data, preference=None, reference_price=None):
@@ -712,6 +716,9 @@ async def receive_signal(request: Request):
         if not isinstance(data, dict):
             data = {}
 
+        # DEBUG: Log received webhook data
+        print(f"🔍 WEBHOOK RECEIVED: {data}")
+
         _extract_signal_time(data, timing_data)
 
         validation_result = _validate_signal_permissions(data)
@@ -720,11 +727,18 @@ async def receive_signal(request: Request):
         preference = validation_result["preference"]
         clean_price = validation_result["clean_price"]
 
+        # DEBUG: Log validation results
+        print(f"🔍 VALIDATION: allow_execution={allow_execution}, ignore_message='{ignore_message}'")
+        print(f"🔍 PREFERENCES: {preference}")
+
         timing_data['processed'] = datetime.now()
 
         if allow_execution:
+            print("✅ EXECUTING TRADE...")
             execution_result = await _process_execution(data, preference, clean_price, timing_data)
+            print(f"✅ EXECUTION RESULT: {execution_result}")
         else:
+            print(f"❌ TRADE IGNORED: {ignore_message}")
             _process_ignored_signal(data, ignore_message, timing_data)
             execution_result = None
 
@@ -734,6 +748,7 @@ async def receive_signal(request: Request):
                               data, timing_data, validation_result.get("signal_strategy"))
 
     except Exception as exc:  # pylint: disable=broad-except
+        print(f"🚨 WEBHOOK ERROR: {str(exc)}")
         return {"status": "error", "message": str(exc), "timing": timing_data}
 
 
