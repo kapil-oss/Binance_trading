@@ -1,7 +1,7 @@
-fastapi==0.104.1
-uvicorn==0.24.0
-requests==2.31.0
-pydantic==2.5.0
-python-dotenv==1.0.0
-sqlalchemy==2.0.23
-pg8000==1.30.3
+fastapi==0.95.0
+uvicorn==0.20.0
+requests==2.28.0
+pydantic==1.10.0
+python-dotenv==0.21.0
+sqlalchemy==1.4.46
+pg8000==1.29.0

@@ -3,8 +3,8 @@ services:
     name: alsa-trade-backend
     runtime: python3
     buildCommand: |
-      pip install --upgrade pip
-      pip install --no-cache-dir --prefer-binary -r requirements.txt
+      python -m pip install --upgrade pip==22.3.1
+      pip install --only-binary=all --no-compile -r requirements.txt
     startCommand: python main.py
     plan: free
     envVars:
@@ -15,5 +15,7 @@ services:
       - key: PYTHONDONTWRITEBYTECODE
         value: 1
       - key: PYTHONUNBUFFERED
+        value: 1
+      - key: PIP_NO_COMPILE
         value: 1
     autoDeploy: false

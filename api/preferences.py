@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, validator
 from sqlalchemy.orm import Session
 
 from database import (
@@ -48,7 +48,8 @@ CAPITAL_MAX = 100
 
 
 class PreferenceResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True
 
     product: Optional[str] = None
     strategy: Optional[str] = None
@@ -60,8 +61,7 @@ class PreferenceResponse(BaseModel):
 class ProductSelection(BaseModel):
     product: str
 
-    @field_validator("product")
-    @classmethod
+    @validator("product")
     def validate_product(cls, value: str) -> str:
         if value not in PRODUCT_OPTIONS:
             raise ValueError("Unsupported product")
@@ -71,8 +71,7 @@ class ProductSelection(BaseModel):
 class StrategySelection(BaseModel):
     strategy: str
 
-    @field_validator("strategy")
-    @classmethod
+    @validator("strategy")
     def validate_strategy(cls, value: str) -> str:
         if value not in STRATEGY_OPTIONS:
             raise ValueError("Unsupported strategy")
@@ -82,8 +81,7 @@ class StrategySelection(BaseModel):
 class DirectionSelection(BaseModel):
     direction_mode: str
 
-    @field_validator("direction_mode")
-    @classmethod
+    @validator("direction_mode")
     def validate_direction(cls, value: str) -> str:
         if value not in DIRECTION_OPTIONS:
             raise ValueError("Unsupported direction mode")
@@ -93,8 +91,7 @@ class DirectionSelection(BaseModel):
 class LeverageSelection(BaseModel):
     leverage: float
 
-    @field_validator("leverage")
-    @classmethod
+    @validator("leverage")
     def validate_leverage(cls, value: float) -> float:
         if value not in LEVERAGE_OPTIONS:
             raise ValueError("Unsupported leverage value")
@@ -104,8 +101,7 @@ class LeverageSelection(BaseModel):
 class CapitalSelection(BaseModel):
     capital_allocation_percent: float
 
-    @field_validator("capital_allocation_percent")
-    @classmethod
+    @validator("capital_allocation_percent")
     def validate_allocation(cls, value: float) -> float:
         if value < CAPITAL_MIN or value > CAPITAL_MAX:
             raise ValueError("Capital allocation must be between 1 and 100")

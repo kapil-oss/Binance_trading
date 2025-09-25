@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Request
 from binance_client import Client, BinanceAPIException
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from config import BINANCE_API_KEY, BINANCE_API_SECRET, BINANCE_USE_TESTNET
@@ -23,7 +23,8 @@ router = APIRouter()
 
 class ExecutionRecord(BaseModel):
     """Pydantic model for execution record API responses."""
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        orm_mode = True
 
     id: int
     timestamp: datetime
