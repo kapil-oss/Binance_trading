@@ -15,4 +15,4 @@ BINANCE_USE_TESTNET = os.getenv("BINANCE_USE_TESTNET", "1").lower() in ("1", "tr
 # Application Configuration
 APP_TITLE = "Alsa Trade App"
 APP_HOST = "0.0.0.0"
-APP_PORT = 8000
+APP_PORT = int(os.getenv("PORT", "8000"))
