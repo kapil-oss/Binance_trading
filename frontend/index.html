@@ -4,10 +4,28 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AlsaTrade - Trading Dashboard</title>
-  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="styles_new.css" />
 </head>
 <body>
-  <main class="layout two-row-layout">
+  <main class="app-container">
+    <!-- Header with Status -->
+    <header class="app-header">
+      <div class="header-content">
+        <h1 class="app-title">AlsaTrade Dashboard</h1>
+        <div class="status-section">
+          <div class="connection-status">
+            <span class="status-dot" id="connection-indicator"></span>
+            <span class="status-label" id="connection-label">Loading...</span>
+          </div>
+          <div class="last-updated">
+            <small>Last updated: <time id="last-updated">--</time></small>
+          </div>
+          <div class="environment-pill" id="environment-pill" hidden></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Metrics Bar -->
     <div class="hero-metrics-bar" aria-live="polite">
       <article class="metric"><span class="metric-label">Product</span><span class="metric-value" id="hero-product">--</span></article>
       <article class="metric"><span class="metric-label">Strategy</span><span class="metric-value" id="hero-strategy">--</span></article>
@@ -18,91 +36,332 @@
       <article class="metric"><span class="metric-label">Available</span><span class="metric-value" id="hero-available">--</span></article>
     </div>
 
-    <!-- Master Allocation Section -->
-    <section class="panel master-allocation-panel">
-      <div class="panel-header">
-        <h2>Master Capital Allocation</h2>
-        <div class="master-total">
-          <strong>Total Allocated: <span id="master-total-allocation">0%</span></strong>
-          <span class="master-allocation-warning" id="master-allocation-warning" style="display: none;">⚠️ Exceeds 100%</span>
-        </div>
-      </div>
-      <div class="master-allocation-grid" id="master-allocation-grid">
-        <div class="master-strategy-item" id="primary-strategy-allocation">
-          <div class="master-strategy-header">
-            <h4>Primary Strategy</h4>
-            <span class="master-strategy-name" id="primary-strategy-name">--</span>
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Navigation Tabs -->
+      <nav class="tab-navigation" role="tablist">
+        <button class="tab-button active" role="tab" data-tab="setup" aria-selected="true" id="tab-setup">
+          <span class="tab-icon">⚙️</span>
+          Strategy Setup
+        </button>
+        <button class="tab-button" role="tab" data-tab="allocation" aria-selected="false" id="tab-allocation">
+          <span class="tab-icon">💰</span>
+          Capital Allocation
+        </button>
+        <button class="tab-button" role="tab" data-tab="executions" aria-selected="false" id="tab-executions">
+          <span class="tab-icon">📊</span>
+          Trade Executions
+        </button>
+        <button class="tab-button" role="tab" data-tab="monitoring" aria-selected="false" id="tab-monitoring">
+          <span class="tab-icon">📈</span>
+          Monitoring
+        </button>
+        <button class="tab-button" role="tab" data-tab="settings" aria-selected="false" id="tab-settings">
+          <span class="tab-icon">🔧</span>
+          Settings
+        </button>
+      </nav>
+
+      <!-- Tab Panels -->
+      <div class="tab-content">
+
+        <!-- Strategy Setup Tab -->
+        <div class="tab-panel active" id="panel-setup" role="tabpanel">
+          <div class="setup-grid">
+            <!-- Product Selection -->
+            <div class="config-card">
+              <h3>Select Product</h3>
+              <div class="product-grid">
+                <button class="product-item" data-product="BTC">BTC</button>
+                <button class="product-item" data-product="ETH">ETH</button>
+                <button class="product-item" data-product="XRP">XRP</button>
+                <button class="product-item" data-product="SOL">SOL</button>
+                <button class="product-item" data-product="BNB">BNB</button>
+                <button class="product-item" data-product="DOGE">DOGE</button>
+                <button class="product-item" data-product="NIFTY">NIFTY</button>
+                <button class="product-item" data-product="BANKNIFTY">BANKNIFTY</button>
+                <button class="product-item" data-product="NASDAQ">NASDAQ</button>
+                <button class="product-item" data-product="S&P">S&P</button>
+                <button class="product-item" data-product="DJ 30">DJ 30</button>
+                <button class="product-item" data-product="OPTIONS">OPTIONS</button>
+              </div>
+              <div class="selected-product">
+                <span class="label">Selected:</span>
+                <span class="value" id="selected-product">None</span>
+              </div>
+            </div>
+
+            <!-- Strategy Selection -->
+            <div class="config-card">
+              <h3>Select SaaS Strategy</h3>
+              <div class="strategy-list">
+                <button class="strategy-item" data-strategy="ALSAPRO 1">ALSAPRO 1</button>
+                <button class="strategy-item" data-strategy="ALSAPRO 2">ALSAPRO 2</button>
+                <button class="strategy-item" data-strategy="ALSAPRO 3">ALSAPRO 3</button>
+                <button class="strategy-item" data-strategy="ALSAPRO 4">ALSAPRO 4</button>
+                <button class="strategy-item" data-strategy="ALSAPRO 5">ALSAPRO 5</button>
+              </div>
+              <div class="selected-strategy">
+                <span class="label">Selected:</span>
+                <span class="value" id="selected-strategy">None</span>
+              </div>
+            </div>
+
+            <!-- Direction Selection -->
+            <div class="config-card">
+              <h3>Select Long/Short</h3>
+              <div class="direction-options">
+                <label class="direction-option">
+                  <input type="radio" name="direction" value="allow_long_short" />
+                  <span class="option-text">Allow Long & Short</span>
+                </label>
+                <label class="direction-option">
+                  <input type="radio" name="direction" value="allow_long_only" />
+                  <span class="option-text">Allow Long Only</span>
+                </label>
+                <label class="direction-option">
+                  <input type="radio" name="direction" value="allow_short_only" />
+                  <span class="option-text">Allow Short Only</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Leverage Selection -->
+            <div class="config-card">
+              <h3>Select Leverage</h3>
+              <div class="leverage-grid">
+                <button class="leverage-item" data-leverage="0.5">0.5x</button>
+                <button class="leverage-item" data-leverage="1">1x</button>
+                <button class="leverage-item" data-leverage="2">2x</button>
+                <button class="leverage-item" data-leverage="3">3x</button>
+                <button class="leverage-item" data-leverage="4">4x</button>
+                <button class="leverage-item" data-leverage="5">5x</button>
+              </div>
+              <div class="selected-leverage">
+                <span class="label">Selected:</span>
+                <span class="value" id="selected-leverage">1x</span>
+              </div>
+            </div>
+
+            <!-- Capital Allocation -->
+            <div class="config-card">
+              <h3>Select Capital Allocation</h3>
+              <div class="allocation-control">
+                <input type="range" id="capital-slider" min="1" max="100" value="10" class="capital-range" />
+                <div class="allocation-display">
+                  <span class="allocation-value" id="allocation-value">10%</span>
+                </div>
+                <div class="allocation-presets">
+                  <button class="preset-btn" data-allocation="5">5%</button>
+                  <button class="preset-btn" data-allocation="10">10%</button>
+                  <button class="preset-btn" data-allocation="25">25%</button>
+                  <button class="preset-btn" data-allocation="50">50%</button>
+                  <button class="preset-btn" data-allocation="100">100%</button>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="master-allocation-controls">
-            <div class="allocation-input-enhanced">
-              <input type="range" id="primary-allocation-slider" min="0" max="100" value="0" class="allocation-slider-enhanced" />
-              <input type="number" id="primary-allocation-input" min="0" max="100" value="0" class="allocation-input-number" />
-              <span class="allocation-percent">%</span>
+
+          <!-- Action Buttons -->
+          <div class="action-panel">
+            <button class="btn btn-primary" id="save-config">Save Configuration</button>
+            <button class="btn btn-secondary" id="reset-config">Reset to Defaults</button>
+          </div>
+        </div>
+
+        <!-- Capital Allocation Tab -->
+        <div class="tab-panel" id="panel-allocation" role="tabpanel">
+          <div class="allocation-content">
+            <div class="allocation-header">
+              <h2>Master Capital Allocation</h2>
+              <div class="total-allocation-display">
+                <span class="total-label">Total Allocated:</span>
+                <span class="total-value" id="master-total">0%</span>
+                <span class="allocation-warning" id="allocation-warning" style="display: none;">⚠️ Exceeds 100%</span>
+              </div>
+            </div>
+
+            <div class="allocation-grid">
+              <!-- Primary Strategy -->
+              <div class="allocation-card primary">
+                <div class="card-header">
+                  <h3>Primary Strategy</h3>
+                  <span class="strategy-name" id="primary-strategy-display">--</span>
+                </div>
+                <div class="allocation-controls">
+                  <div class="slider-container">
+                    <input type="range" id="primary-allocation" min="0" max="100" value="0" />
+                    <div class="slider-labels">
+                      <span>0%</span>
+                      <span>50%</span>
+                      <span>100%</span>
+                    </div>
+                  </div>
+                  <div class="allocation-input">
+                    <input type="number" id="primary-allocation-input" min="0" max="100" value="0" />
+                    <span>%</span>
+                  </div>
+                </div>
+                <div class="allocation-breakdown">
+                  <div class="breakdown-item">
+                    <span>Long: <span id="primary-long-allocation">0%</span></span>
+                  </div>
+                  <div class="breakdown-item">
+                    <span>Short: <span id="primary-short-allocation">0%</span></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Additional Strategies -->
+              <div class="additional-strategies">
+                <div class="section-header">
+                  <h3>Additional Strategies</h3>
+                  <button class="btn btn-small" id="add-strategy">+ Add Strategy</button>
+                </div>
+                <div class="strategies-list" id="additional-strategies-list">
+                  <div class="empty-state">
+                    <p>No additional strategies configured</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <div class="two-row-grid stacked-logs-grid">
-      <section class="panel settings-panel two-row-panel stacked-settings-panel">
-        <div class="panel-header"><h2>Strategy Inputs</h2></div>
-        <div class="settings-grid two-row-settings-grid">
-          <div class="settings-card settings-card--wide"><h3>Market</h3><p class="support-text">Select the trading product to align signals with the correct market.</p><label class="field field--stack"><span class="field-label">Product</span><select id="product-select"></select></label></div>
-          <div class="settings-card settings-card--wide"><h3>SaaS Package</h3><p class="support-text">Choose the automation pack delivering entries and exits.</p><label class="field field--stack"><span class="field-label">Strategy</span><select id="strategy-select"></select></label></div>
-          <div class="settings-card settings-card--wide"><h3>Trading Configuration</h3><p class="support-text">Configure Long and Short positions with individual leverage and capital allocation.</p><div class="trading-config"><div class="position-config" id="long-config"><div class="position-header"><button type="button" class="position-toggle" id="long-toggle" data-position="long"><span class="toggle-indicator"></span>Long Positions</button></div><div class="position-controls"><div class="control-group"><label class="control-label">Leverage</label><select id="long-leverage-select" class="control-select"></select></div><div class="control-group"><label class="control-label">Capital Allocation</label><div class="allocation-input"><input type="range" id="long-capital-range" min="0" max="100" value="0" class="allocation-slider" /><span id="long-capital-value" class="allocation-value">0%</span></div></div></div></div><div class="position-config" id="short-config"><div class="position-header"><button type="button" class="position-toggle" id="short-toggle" data-position="short"><span class="toggle-indicator"></span>Short Positions</button></div><div class="position-controls"><div class="control-group"><label class="control-label">Leverage</label><select id="short-leverage-select" class="control-select"></select></div><div class="control-group"><label class="control-label">Capital Allocation</label><div class="allocation-input"><input type="range" id="short-capital-range" min="0" max="100" value="0" class="allocation-slider" /><span id="short-capital-value" class="allocation-value">0%</span></div></div></div></div></div><div class="allocation-summary"><div class="total-allocation"><strong>Total Allocation: <span id="total-allocation">0%</span></strong><span class="allocation-warning" id="allocation-warning" style="display: none;">⚠️ Exceeds 100%</span></div></div><div class="tips"><strong>Tip:</strong> Enable both Long and Short for dynamic hedging as signals change direction.</div></div>
-          <div class="settings-card settings-card--wide" id="strategy-management"><h3>Additional Strategies</h3><p class="support-text">Add and configure multiple trading strategies. Each strategy gets its own capital allocation from the master pool.</p><div class="strategy-controls"><div class="strategy-header"><h4>Additional Strategies</h4><button type="button" class="add-strategy-btn" id="add-strategy-btn">+ Add Strategy</button></div><div class="strategies-list" id="strategies-list"></div></div></div>
+        <!-- Trade Executions Tab -->
+        <div class="tab-panel" id="panel-executions" role="tabpanel">
+          <div class="executions-content">
+            <div class="executions-header">
+              <h2>Trade Executions</h2>
+              <div class="executions-controls">
+                <button class="btn btn-small" id="toggle-timing">Show Timing</button>
+                <button class="btn btn-small" id="toggle-details">Show Details</button>
+                <button class="btn btn-small" id="refresh-executions">Refresh</button>
+                <span class="executions-count" id="executions-count">0 executions</span>
+              </div>
+            </div>
+            <div class="executions-list">
+              <ul id="execution-log" class="execution-log">
+                <li class="empty-state">Waiting for trade executions...</li>
+              </ul>
+            </div>
+          </div>
         </div>
-      </section>
 
-      <div class="stacked-right-col">
-        <aside class="panel insight-panel two-row-panel stacked-snapshot-panel" aria-live="polite">
-          <div class="insight-section"><div class="insight-section__header"><h2>Program Snapshot</h2></div><div class="summary-grid two-row-summary-grid">
-            <article class="summary-item"><span class="summary-label">Product</span><span class="summary-value" id="summary-product">--</span></article>
-            <article class="summary-item"><span class="summary-label">Strategy</span><span class="summary-value" id="summary-strategy">--</span></article>
-            <article class="summary-item"><span class="summary-label">Long Active</span><span class="summary-value" id="summary-long-active">No</span></article>
-            <article class="summary-item"><span class="summary-label">Short Active</span><span class="summary-value" id="summary-short-active">No</span></article>
-            <article class="summary-item"><span class="summary-label">Long Allocation</span><span class="summary-value" id="summary-long-allocation">0%</span></article>
-            <article class="summary-item"><span class="summary-label">Short Allocation</span><span class="summary-value" id="summary-short-allocation">0%</span></article>
-            <article class="summary-item"><span class="summary-label">Total Allocation</span><span class="summary-value" id="summary-total-allocation">0%</span></article>
-            <article class="summary-item"><span class="summary-label">Wallet Balance</span><span class="summary-value" id="summary-account-balance">--</span></article>
-            <article class="summary-item"><span class="summary-label">Available Balance</span><span class="summary-value" id="summary-account-available">--</span></article>
-          </div></div>
-          <div class="callout"><h3>Before going live</h3><ul><li>Verify capital availability with your broker.</li><li>Confirm SaaS permissions for this account.</li><li>Review your max drawdown and risk rules.</li></ul></div>
-        </aside>
-        <div class="logs-card logs-card--wide two-row-logs-card stacked-logs-card">
-          <div class="logs-card__header"><h2>Recent Activity</h2></div>
-          <ul id="activity-log" class="activity-log"><li class="activity-placeholder">Actions will appear here once you start updating preferences.</li></ul>
-          <p class="support-text">All API submissions are logged locally for quick traceability.</p>
+        <!-- Monitoring Tab -->
+        <div class="tab-panel" id="panel-monitoring" role="tabpanel">
+          <div class="monitoring-content">
+            <div class="monitoring-grid">
+              <!-- Account Summary -->
+              <div class="monitoring-card">
+                <h3>Account Summary</h3>
+                <div class="summary-items">
+                  <div class="summary-item">
+                    <span class="label">Wallet Balance:</span>
+                    <span class="value" id="wallet-balance">--</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Available Balance:</span>
+                    <span class="value" id="available-balance">--</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Total P&L:</span>
+                    <span class="value" id="total-pnl">--</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Strategy Status -->
+              <div class="monitoring-card">
+                <h3>Strategy Status</h3>
+                <div class="status-items">
+                  <div class="status-item">
+                    <span class="label">Active Product:</span>
+                    <span class="value" id="active-product">--</span>
+                  </div>
+                  <div class="status-item">
+                    <span class="label">Active Strategy:</span>
+                    <span class="value" id="active-strategy">--</span>
+                  </div>
+                  <div class="status-item">
+                    <span class="label">Position Mode:</span>
+                    <span class="value" id="position-mode">--</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recent Activity -->
+              <div class="monitoring-card full-width">
+                <h3>Recent Activity</h3>
+                <div class="activity-feed">
+                  <ul id="activity-log" class="activity-list">
+                    <li class="empty-state">No recent activity</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-panel" id="panel-settings" role="tabpanel">
+          <div class="settings-content">
+            <div class="settings-sections">
+              <!-- API Configuration -->
+              <div class="settings-section">
+                <h3>API Configuration</h3>
+                <div class="setting-item">
+                  <label>Binance API Status:</label>
+                  <span class="status-indicator" id="api-status">Checking...</span>
+                </div>
+                <div class="setting-item">
+                  <label>Testnet Mode:</label>
+                  <span id="testnet-status">--</span>
+                </div>
+              </div>
+
+              <!-- System Settings -->
+              <div class="settings-section">
+                <h3>System Settings</h3>
+                <div class="setting-item">
+                  <label>Auto-refresh Interval:</label>
+                  <select id="refresh-interval">
+                    <option value="5000">5 seconds</option>
+                    <option value="10000">10 seconds</option>
+                    <option value="30000">30 seconds</option>
+                    <option value="60000">1 minute</option>
+                  </select>
+                </div>
+                <div class="setting-item">
+                  <button class="btn btn-secondary" id="clear-cache">Clear Cache</button>
+                  <button class="btn btn-secondary" id="export-config">Export Config</button>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="settings-section">
+                <h3>Actions</h3>
+                <div class="action-buttons">
+                  <button class="btn btn-primary" id="refresh-all">Refresh All Data</button>
+                  <button class="btn btn-secondary" id="reset-preferences">Reset Preferences</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </main>
 
-  <!-- Full-width Trade Executions Section at bottom -->
-  <section class="execution-section-full">
-    <div class="execution-widget-full">
-      <div class="execution-header-full">
-        <h2>Trade Executions</h2>
-        <div class="execution-controls">
-          <button type="button" class="toggle-details-btn" id="toggle-details-btn">Show Details</button>
-          <button type="button" class="toggle-timing-btn" id="toggle-timing-btn">Show Timing</button>
-          <span class="execution-count" id="execution-count">0 executions</span>
-        </div>
-      </div>
-      <div class="execution-log-container-full">
-        <ul id="execution-log" class="execution-log-full"><li class="activity-placeholder">Waiting for webhook activity.</li></ul>
-      </div>
-      <p class="support-text">Comprehensive trade execution tracking with full timing, pricing, and error details - Updated in real-time</p>
-    </div>
-  </section>
-
-
+  <!-- Toast Messages -->
   <div id="toast" class="toast" role="status" aria-live="assertive" hidden></div>
+
+  <!-- Loading Overlay -->
   <div id="screen-loader" class="screen-loader" hidden>
-    <div class="spinner" role="status" aria-label="Loading"></div>
+    <div class="spinner"></div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app_new.js"></script>
 </body>
 </html>
